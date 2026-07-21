@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aliya Alsafa</title>
+  <meta name="description" content="Aliya Alsafa — Stanford CS, software engineer at Chainguard, supply chain security." />
+  <meta name="author" content="Aliya Alsafa" />
+  <link rel="canonical" href="https://aliyaalsafa.github.io/" />
+  <meta property="og:title" content="Aliya Alsafa" />
+  <meta property="og:description" content="Stanford CS grad, software engineer at Chainguard." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --bg:         #0A0A0C;
+      --bg2:        #111115;
+      --card:       #14141A;
+      --card2:      #1C1C24;
+      --fg:         #E8E8F0;
+      --fg2:        #A0A0B0;
+      --muted:      #505060;
+      --accent:     #9B7ECC;
+      --accent-soft:#C4A8E0;
+      --accent-dim: rgba(155,126,204,0.12);
+      --accent-bdr: rgba(155,126,204,0.28);
+      --border:     rgba(255,255,255,0.06);
+      --border2:    rgba(255,255,255,0.10);
+      --shadow:     0 1px 4px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg:  0 4px 12px rgba(0,0,0,0.6), 0 16px 40px rgba(0,0,0,0.5);
+      --radius:     10px;
+      --mono:       'Space Mono', 'SF Mono', 'Menlo', 'Courier New', monospace;
+      --font-brand: 'Space Grotesk', system-ui, sans-serif;
+      --font-ui:    'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.25, 0, 0, 1);
+      --max-w:      860px;
+    }
+    [data-theme="light"] {
+      --bg:         #F7F7F9;
+      --bg2:        #EFEFF3;
+      --card:       #FFFFFF;
+      --card2:      #F3F3F7;
+      --fg:         #0A0A0A;
+      --fg2:        #3A3A3A;
+      --muted:      #787882;
+      --accent:     #7B5EA7;
+      --accent-soft:#9575CD;
+      --accent-dim: rgba(123,94,167,0.09);
+      --accent-bdr: rgba(123,94,167,0.22);
+      --border:     rgba(0,0,0,0.07);
+      --border2:    rgba(0,0,0,0.12);
+      --shadow:     0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+      --shadow-lg:  0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.10);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 18px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-ui);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* ─── TERMINAL SPLASH ─── */
+    #landing {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #08080A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.6s ease;
+    }
+    #landing.out { opacity: 0; pointer-events: none; }
+    .term-window { width: min(600px, 88vw); padding: 2rem 2.5rem; }
+    .term-body {
+      font-family: 'SF Mono', 'Fira Code', 'Menlo', 'Courier New', monospace;
+      font-size: clamp(0.82rem, 1.8vw, 0.975rem);
+      line-height: 1.75;
+      color: #D4D4D4;
+    }
+    .term-line { margin: 0; white-space: pre-wrap; min-height: 1.75em; }
+    .term-prompt { color: #9575CD; }
+    .term-cmd    { color: #FFFFFF; }
+    .term-out-name {
+      font-family: var(--font-brand);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin: 0.2rem 0 0.6rem;
+      display: block;
+    }
+    .term-out-roles { color: #9575CD; letter-spacing: 0.04em; margin-bottom: 1.1rem; display: block; }
+    .term-out-launch { color: rgba(255,255,255,0.38); display: block; }
+    .term-cursor {
+      display: inline-block;
+      width: 0.52em; height: 1em;
+      background: #9575CD;
+      vertical-align: text-bottom;
+      margin-left: 1px;
+      animation: termBlink 1s steps(1) infinite;
+    }
+    .term-hint {
+      position: absolute; bottom: 2rem;
+      font-size: 0.68rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.18);
+      font-family: var(--font-ui); pointer-events: none;
+    }
+    @keyframes termBlink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+    /* ─── APP SHELL ─── */
+    #app {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+    #app.show { opacity: 1; transform: none; }
+
+    /* ─── TOP NAV ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,12,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border2);
+      transition: background 0.3s;
+    }
+    [data-theme="light"] .top-nav {
+      background: rgba(247,247,249,0.88);
+    }
+    .nav-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--font-brand);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 0.15rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      padding: 0.35rem 0.6rem;
+      border-radius: 5px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--accent); background: var(--accent-dim); }
+    .nav-links .nav-resume {
+      color: var(--accent);
+      border: 1px solid var(--accent-bdr);
+      background: var(--accent-dim);
+    }
+    .nav-links .nav-resume:hover { background: var(--accent-bdr); }
+
+    /* theme toggle */
+    .nav-theme {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      padding: 0.35rem 0.6rem;
+      border-radius: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-theme:hover { color: var(--accent); background: var(--accent-dim); }
+
+    /* ─── PAGE BODY ─── */
+    .page {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 2.75rem;
+      align-items: start;
+      padding: 4rem 0 4.5rem;
+    }
+
+    .hero-photo-wrap {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .hero-photo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7B5EA7, #9B7ECC, #C4A8E0, #6B4F9A);
+      z-index: 0;
+    }
+    .hero-photo-inner {
+      position: relative;
+      z-index: 1;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg,#7B5EA7 0%,#9B7ECC 50%,#C4A8E0 100%);
+    }
+    .hero-photo-inner img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+    }
+
+    .hero-content { padding-top: 0.25rem; }
+
+    .hero-name {
+      font-family: var(--font-brand);
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.2rem;
+      color: var(--fg);
+    }
+
+    .hero-degrees {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      color: var(--fg2);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.55rem;
+    }
+
+    .hero-tagline {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-status {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--fg2);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .hero-status-prompt { color: var(--accent); }
+    .hero-status-cursor {
+      display: inline-block;
+      width: 0.5em; height: 0.9em;
+      background: var(--accent);
+      vertical-align: middle;
+      margin-left: 1px;
+      animation: termBlink 1s steps(1) infinite;
+    }
+
+    .hero-bio {
+      font-size: 0.9375rem;
+      color: var(--fg2);
+      line-height: 1.78;
+      margin-bottom: 1.5rem;
+      max-width: 520px;
+    }
+    .hero-bio a { color: var(--accent-soft); }
+    .hero-bio a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+    .hero-links {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      border: 1px solid var(--accent-bdr);
+      background: var(--accent-dim);
+      padding: 0.3rem 0.72rem;
+      border-radius: 4px;
+      transition: background 0.15s, border-color 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .hero-link:hover { background: var(--accent-bdr); color: var(--accent-soft); }
+
+    /* ─── SECTION ─── */
+    .section {
+      padding-top: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .section-heading {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+      margin-bottom: 2.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border2);
+      opacity: 0.9;
+    }
+    .section-heading::before { content: '// '; opacity: 0.55; }
+
+    /* ─── ENTRY ROWS (experience, research, education) ─── */
+    .entries { display: flex; flex-direction: column; gap: 2rem; }
+
+    .entry {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0 2.5rem;
+    }
+
+    .entry-meta {
+      padding-top: 0.2rem;
+    }
+    .entry-date {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--fg2);
+      letter-spacing: 0.03em;
+      line-height: 1.6;
+      display: block;
+    }
+    .entry-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-bdr);
+      padding: 0.12rem 0.45rem;
+      border-radius: 3px;
+      margin-top: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    .entry-body { /* default entry body */ }
+
+    .entry-logo {
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 4px;
+      object-fit: contain;
+      vertical-align: middle;
+      margin-right: 0.45rem;
+      display: inline-block;
+    }
+    .entry-org {
+      font-family: var(--font-brand);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin-bottom: 0.2rem;
+    }
+    .entry-role {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.65rem;
+    }
+    .entry-desc {
+      font-size: 0.9rem;
+      color: var(--fg2);
+      line-height: 1.72;
+      margin-bottom: 0.85rem;
+    }
+    .entry-featured .entry-desc--primary {
+      color: var(--bg) !important;
+      font-weight: 500;
+    }
+    .entry-desc strong { color: var(--fg); font-weight: 600; }
+    .entry-body--with-preview {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .entry-body-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .paper-embed-wrap {
+      width: 260px;
+      flex-shrink: 0;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg2);
+    }
+    .paper-embed {
+      display: block;
+      width: 100%;
+      height: 340px;
+      border: none;
+    }
+    .paper-embed-link {
+      display: block;
+      padding: 0.45rem 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent-soft);
+      text-decoration: none;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+    .paper-embed-link:hover { color: var(--fg); }
+    @media (max-width: 600px) {
+      .entry-body--with-preview { flex-direction: column; }
+      .paper-embed-wrap { width: 100%; }
+    }
+    .entry-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .entry-link {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      border: 1px solid var(--accent-bdr);
+      background: var(--accent-dim);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .entry-link:hover { background: var(--accent-bdr); }
+
+    /* featured entry (Chainguard) — inverts to contrast with bg */
+    .entry-featured .entry-body {
+      background: var(--fg);
+      color: var(--bg);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--accent);
+    }
+    .entry-featured .entry-org   { color: var(--bg); }
+    .entry-featured .entry-role  { color: rgba(100,60,180,0.8); }
+    .entry-featured .entry-desc  { color: color-mix(in srgb, var(--bg) 30%, transparent); }
+    /* light-mode override for featured */
+    [data-theme="light"] .entry-featured .entry-role { color: #6B4F9A; }
+    [data-theme="light"] .entry-featured .entry-link { color: rgba(247,247,249,0.7); border-color: rgba(247,247,249,0.25); background: rgba(247,247,249,0.1); }
+    [data-theme="light"] .entry-featured .entry-link:hover { background: rgba(247,247,249,0.2); }
+
+    /* dark-mode link override for featured */
+    .entry-featured .entry-link {
+      color: rgba(10,10,12,0.55);
+      border-color: rgba(10,10,12,0.18);
+      background: rgba(10,10,12,0.08);
+    }
+    .entry-featured .entry-link:hover {
+      background: rgba(10,10,12,0.15);
+      color: rgba(10,10,12,0.85);
+    }
+
+    /* ─── COURSEWORK ─── */
+    .course-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 3rem;
+    }
+    .course-cat-title {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border2);
+    }
+    .course-cat-title::before { content: '> '; opacity: 0.6; }
+    .course-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .course-list li {
+      font-size: 0.875rem;
+      color: var(--fg2);
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      line-height: 1.5;
+    }
+    .course-code {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+      min-width: 4rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border2);
+      margin-top: 5rem;
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      max-width: var(--max-w);
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 2rem;
+      padding-right: 2rem;
+      padding-bottom: 2rem;
+    }
+    footer a { color: var(--accent); }
+    footer a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      .hero { grid-template-columns: 1fr; gap: 1.75rem; padding: 2.5rem 0 3rem; }
+      .hero-photo-wrap, .hero-photo-inner { width: 120px; height: 120px; }
+      .entry { grid-template-columns: 1fr; gap: 0.5rem; }
+      .entry-meta { display: flex; gap: 0.75rem; align-items: center; }
+      .course-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+      .page { padding: 0 1.25rem 4rem; }
+      .nav-inner { padding: 0 1.25rem; }
+      .nav-links li:not(.nav-always) { display: none; }
+      footer { flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TERMINAL SPLASH ── -->
+<div id="landing">
+  <div class="term-window">
+    <div class="term-body" id="term-body"></div>
+  </div>
+  <p class="term-hint">click to skip</p>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Aliya Alsafa</a>
+      <ul class="nav-links">
+        <li><a href="#experience">experience</a></li>
+        <li><a href="#research">research</a></li>
+        <li><a href="#education">education</a></li>
+        <li><a href="#coursework">coursework</a></li>
+        <li class="nav-always"><a href="resume.pdf" target="_blank" class="nav-resume">resume ↗</a></li>
+        <li class="nav-always"><button class="nav-theme" id="theme-btn" onclick="toggleTheme()">☀ light</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE CONTENT -->
+  <main class="page">
+
+    <!-- HERO -->
+    <section class="hero" id="about">
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-inner" id="photo-inner">
+          <img src="photo.jpg" alt="Aliya Alsafa" id="photo-img"
+               onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-name">Aliya Alsafa</h1>
+        <p class="hero-degrees">Stanford BS '26 &nbsp;·&nbsp; MS '27</p>
+        <p class="hero-tagline">systems &nbsp;·&nbsp; security &nbsp;·&nbsp; ml</p>
+        <p class="hero-status">
+          <span class="hero-status-prompt">$&nbsp;status:</span>
+          <span id="status-val"></span><span class="hero-status-cursor"></span>
+        </p>
+        <p class="hero-bio">
+          Hi! I am a master's student at Stanford, focusing on AI. I previously studied computer science (focusing on systems) at Stanford University. I've done research on packet filtering directly on commodity NICs, worked with a biomechanical AI model simulating muscle activation in piano performance, and I'm currently a TryHackMe campus ambassador planning a cybersecurity event on campus.
+          <br><br>
+          In my free time, I play classical piano. That lives at <a href="https://aliyaalsafa.com" target="_blank" rel="noopener">aliyaalsafa.com</a>.
+        </p>
+        <div class="hero-links">
+          <a class="hero-link" href="https://github.com/aliyaalsafa" target="_blank" rel="noopener">github ↗</a>
+          <a class="hero-link" href="https://www.linkedin.com/in/aliya-alsafa/" target="_blank" rel="noopener">linkedin ↗</a>
+          <a class="hero-link" href="https://mail.google.com/mail/?view=cm&to=aalsafa@stanford.edu">email</a>
+          <a class="hero-link" href="resume.pdf" target="_blank" rel="noopener">resume ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="section" id="experience">
+      <div class="section-heading">experience</div>
+      <div class="entries">
+
+        <div class="entry entry-featured">
+          <div class="entry-meta">
+            <span class="entry-date">2025 — now</span>
+            <span class="entry-date">Stanford</span>
+          </div>
+          <div class="entry-body">
+            <div class="entry-org">Empirical Security Research Group</div>
+            <div class="entry-role">research assistant &nbsp;·&nbsp; ESRG</div>
+            <p class="entry-desc">
+              <span class="entry-desc--primary">Joined through CURIS (Stanford CS Undergraduate Research Internship). Built Rust modules in the Retina network analysis framework to offload flow-rule installation onto commodity NICs (DPDK, Mellanox). Designed experiments to measure NIC performance under high-throughput workloads. Presented findings in the research poster <em>"Reducing Host Load Via Commodity NIC Offloading"</em> at the Stanford ESRG summer session. Published as a capstone project on the <a href="https://cs191w.stanford.edu/" target="_blank" rel="noopener">CS 191W research website ↗</a>.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <span class="entry-date">Summer 2024</span>
+          </div>
+          <div class="entry-body">
+            <div class="entry-org">Redis</div>
+            <div class="entry-role">security engineering intern</div>
+            <p class="entry-desc">
+              Explored penetration testing, evaluated HackerOne bug bounty reports, and developed an offensive testing guide for software developers. Built and deployed a tool to identify and remediate orphaned corporate DNS records, reducing cloud attack surface. Worked on the Hardening Baselines Initiative using Wiz to scan the cloud environment for CIS Ubuntu compliance, and integrated DoControl into corporate SaaS apps to strengthen data security controls.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section class="section" id="research">
+      <div class="section-heading">research</div>
+      <div class="entries">
+
+        <div class="entry">
+          <div class="entry-meta">
+            <span class="entry-date">2025 — now</span>
+            <span class="entry-tag">current</span>
+          </div>
+          <div class="entry-body entry-body--with-preview">
+            <div class="entry-body-text">
+              <div class="entry-org">Biomechanical Model in Music</div>
+              <div class="entry-role">research assistantship &nbsp;·&nbsp; AI &amp; music</div>
+              <p class="entry-desc">
+                Working with and adapting an AI model that simulates muscle activation while playing the piano. Research explores how biomechanical modeling can inform music performance and technique. Building on work done for <a href="https://for-elise.github.io/" target="_blank" rel="noopener">for-elise.github.io ↗</a>.
+              </p>
+            </div>
+            <div class="paper-embed-wrap">
+              <iframe class="paper-embed" src="https://for-elise.github.io/" title="For Elise Project"></iframe>
+              <a class="paper-embed-link" href="https://for-elise.github.io/" target="_blank" rel="noopener">open site ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <span class="entry-date">2025 — now</span>
+            <span class="entry-date">Stanford ESRG</span>
+          </div>
+          <div class="entry-body entry-body--with-preview">
+            <div class="entry-body-text">
+              <div class="entry-org">Reducing Host Load Via Commodity NIC Offloading</div>
+              <div class="entry-role">contributing author &nbsp;·&nbsp; CoNEXT 2026</div>
+              <p class="entry-desc">
+                Contributing to a research paper on network flow offload with commodity NICs. Work builds on my experiments done during Stanford CURIS measuring rule latency and drop behavior in the Retina framework, targeting publication at CoNEXT 2026.
+              </p>
+            </div>
+            <div class="paper-embed-wrap">
+              <iframe class="paper-embed" src="Reducing_Host_Load_Via_Commodity_NIC_Offloading____Aliya_Alsafa.pdf" title="Reducing Host Load Via Commodity NIC Offloading"></iframe>
+              <a class="paper-embed-link" href="Reducing_Host_Load_Via_Commodity_NIC_Offloading____Aliya_Alsafa.pdf" target="_blank" rel="noopener">open full paper ↗</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="section" id="education">
+      <div class="section-heading">education</div>
+      <div class="entries">
+
+        <div class="entry">
+          <div class="entry-meta">
+            <span class="entry-date">2021 — 2026</span>
+          </div>
+          <div class="entry-body">
+            <div class="entry-org">Stanford University</div>
+            <div class="entry-role">B.S. Computer Science &nbsp;·&nbsp; Music Minor &nbsp;·&nbsp; GPA 3.65</div>
+            <p class="entry-desc">
+              B.S. Systems track, graduated 2026. Coterm M.S. in AI expected graduation 2027.
+            </p>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <span class="entry-date">2015 — 2022</span>
+            <span class="entry-date">New York</span>
+          </div>
+          <div class="entry-body">
+            <div class="entry-org">Juilliard Pre-College</div>
+            <div class="entry-role">diploma &nbsp;·&nbsp; piano performance</div>
+            <p class="entry-desc">
+              Trained as a classical concert pianist for 7 years with top piano performance faculty. Private lessons, chamber music, and high-level music electives every Saturday.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COURSEWORK -->
+    <section class="section" id="coursework">
+      <div class="section-heading">coursework</div>
+      <div class="course-grid">
+
+        <div>
+          <div class="course-cat-title">systems</div>
+          <ul class="course-list">
+            <li><span class="course-code">CS 80E</span> Dissecting the Modern Computer</li>
+            <li><span class="course-code">CS 107</span> Computer Organization &amp; Systems</li>
+            <li><span class="course-code">CS 111</span> Operating Systems Principles</li>
+            <li><span class="course-code">CS 112</span> OS Kernel Implementation</li>
+            <li><span class="course-code">CS 143</span> Compilers</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="course-cat-title">security &amp; networking</div>
+          <ul class="course-list">
+            <li><span class="course-code">CS 144</span> Computer Networking</li>
+            <li><span class="course-code">CS 155</span> Computer &amp; Network Security</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="course-cat-title">ai &amp; computing</div>
+          <ul class="course-list">
+            <li><span class="course-code">CS 106S</span> Coding for Social Good</li>
+            <li><span class="course-code">CS 221</span> Artificial Intelligence</li>
+            <li><span class="course-code">CS 148</span> Computer Graphics &amp; Imaging</li>
+            <li><span class="course-code">CS 278</span> Social Computing</li>
+            <li><span class="course-code">ENGR 76</span> Information Science &amp; Engineering</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="course-cat-title">theory &amp; math</div>
+          <ul class="course-list">
+            <li><span class="course-code">CS 106B</span> Programming Abstractions</li>
+            <li><span class="course-code">CS 103</span> Mathematical Foundations of Computing</li>
+            <li><span class="course-code">CS 109</span> Probability for Computer Scientists</li>
+            <li><span class="course-code">CS 161</span> Design &amp; Analysis of Algorithms</li>
+            <li><span class="course-code">MATH 51</span> Linear Algebra &amp; Multivariable Calculus</li>
+            <li><span class="course-code">MATH 52</span> Integral Calculus of Several Variables</li>
+          </ul>
+        </div>
+
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>// aliya alsafa</span>
+    <a href="https://mail.google.com/mail/?view=cm&to=aalsafa@stanford.edu">aalsafa@stanford.edu</a>
+  </footer>
+
+</div><!-- /app -->
+
+<script>
+  /* ── TERMINAL SPLASH ── */
+  let entered = false;
+
+  function enterSite() {
+    if (entered) return;
+    entered = true;
+    document.getElementById('landing').classList.add('out');
+    document.getElementById('app').classList.add('show');
+    startTyping();
+  }
+
+  document.getElementById('landing').addEventListener('click', enterSite);
+
+  (function runTerminal() {
+    const body = document.getElementById('term-body');
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+
+    function addEl(tag, cls, html) {
+      const el = document.createElement(tag);
+      if (cls) el.className = cls;
+      if (html) el.innerHTML = html;
+      body.appendChild(el);
+      return el;
+    }
+
+    function setPrompt(el) {
+      el.innerHTML = '<span class="term-prompt">~/aliyaalsafa</span> $ <span class="term-cursor"></span>';
+    }
+
+    function typeCmd(el, text) {
+      return new Promise(resolve => {
+        let i = 0;
+        function step() {
+          el.innerHTML = `<span class="term-prompt">~/aliyaalsafa</span> $ <span class="term-cmd">${text.slice(0, i)}</span><span class="term-cursor"></span>`;
+          if (i < text.length) { i++; setTimeout(step, 65 + Math.random() * 45); }
+          else setTimeout(resolve, 160);
+        }
+        step();
+      });
+    }
+
+    async function run() {
+      await wait(550);
+
+      const l1 = addEl('p', 'term-line');
+      setPrompt(l1);
+      await wait(420);
+      await typeCmd(l1, 'whoami');
+      l1.innerHTML = '<span class="term-prompt">~/aliyaalsafa</span> $ <span class="term-cmd">whoami</span>';
+      await wait(120);
+      addEl('span', 'term-out-name', 'Aliya Alsafa');
+      await wait(460);
+
+      const l2 = addEl('p', 'term-line');
+      setPrompt(l2);
+      await wait(340);
+      await typeCmd(l2, 'cat focus.txt');
+      l2.innerHTML = '<span class="term-prompt">~/aliyaalsafa</span> $ <span class="term-cmd">cat focus.txt</span>';
+      await wait(120);
+      addEl('span', 'term-out-roles', 'systems &nbsp;&middot;&nbsp; security &nbsp;&middot;&nbsp; ml');
+      await wait(560);
+
+      const l3 = addEl('p', 'term-line');
+      setPrompt(l3);
+      await wait(360);
+      await typeCmd(l3, './open_portfolio');
+      l3.innerHTML = '<span class="term-prompt">~/aliyaalsafa</span> $ <span class="term-cmd">./open_portfolio</span>';
+      await wait(120);
+      addEl('span', 'term-out-launch', '→ &nbsp;launching aliyaalsafa.github.io...');
+      await wait(950);
+
+      enterSite();
+    }
+
+    run();
+  })();
+
+  /* ── TYPING ANIMATION (hero status) ── */
+  const phrases = [
+    'learning Grieg Piano Concerto in A minor',
+    'surviving a coterm',
+    'wondering who left port 22 open',
+  ];
+  let pi = 0, ci = 0, del = false;
+  const valEl = document.getElementById('status-val');
+  let typingStarted = false;
+
+  function startTyping() {
+    if (typingStarted) return;
+    typingStarted = true;
+    typeStep();
+  }
+
+  function typeStep() {
+    const phrase = phrases[pi];
+    if (!del) {
+      valEl.textContent = phrase.slice(0, ci + 1);
+      ci++;
+      if (ci === phrase.length) { del = true; setTimeout(typeStep, 2000); return; }
+      setTimeout(typeStep, 55 + Math.random() * 40);
+    } else {
+      valEl.textContent = phrase.slice(0, ci - 1);
+      ci--;
+      if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; setTimeout(typeStep, 400); return; }
+      setTimeout(typeStep, 28);
+    }
+  }
+
+  /* ── THEME ── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const btn  = document.getElementById('theme-btn');
+    const isLight = html.getAttribute('data-theme') === 'light';
+    html.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    btn.textContent = isLight ? '☀ light' : '☾ dark';
+    try { localStorage.setItem('theme', isLight ? 'dark' : 'light'); } catch(e) {}
+  }
+
+  try {
+    const saved = localStorage.getItem('theme');
+    const btn = document.getElementById('theme-btn');
+    if (saved === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      btn.textContent = '☾ dark';
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

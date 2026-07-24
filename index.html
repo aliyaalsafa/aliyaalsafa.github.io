@@ -614,7 +614,7 @@
           <span id="status-val"></span><span class="hero-status-cursor"></span>
         </p>
         <p class="hero-bio">
-          Hi! I am a master's student at Stanford, focusing on AI, and currently a Security Engineering Intern on the Product Security team at Chainguard. I previously studied computer science (focusing on systems) at Stanford University. I've done research on packet filtering directly on commodity NICs and worked with a biomechanical AI model simulating muscle activation in piano performance.
+          Hi! I am a master's student at Stanford, focusing on AI, and currently a Security Engineering Intern on the Product Security team at Chainguard. I previously studied computer science (focusing on systems) at Stanford University. I've done research on packet filtering directly on commodity NICs, worked with a biomechanical AI model simulating muscle activation in piano performance, and I'm a TryHackMe campus ambassador planning a cybersecurity event on campus.
           <br><br>
           In my free time, I play classical piano. That lives at <a href="https://aliyaalsafa.com" target="_blank" rel="noopener">aliyaalsafa.com</a>.
         </p>
@@ -934,17 +934,7 @@
     const isLight = html.getAttribute('data-theme') === 'light';
     html.setAttribute('data-theme', isLight ? 'dark' : 'light');
     btn.textContent = isLight ? '☀ light' : '☾ dark';
-    try { localStorage.setItem('theme', isLight ? 'dark' : 'light'); } catch(e) {}
   }
-
-  try {
-    const saved = localStorage.getItem('theme');
-    const btn = document.getElementById('theme-btn');
-    if (saved === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      btn.textContent = '☾ dark';
-    }
-  } catch(e) {}
 </script>
 </body>
 </html>
